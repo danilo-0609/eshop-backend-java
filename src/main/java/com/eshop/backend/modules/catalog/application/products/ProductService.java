@@ -8,7 +8,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.eshop.backend.buildingBlocks.Error;
 import com.eshop.backend.buildingBlocks.Result;
+import com.eshop.backend.buildingBlocks.Success;
 import com.eshop.backend.modules.catalog.domain.products.*;
 
 @Service
@@ -122,5 +124,28 @@ public class ProductService {
 		}
 		
 		return productsDto;
+	}
+	
+	public Result<Success> sellProduct(UUID id, int amountOfProducts){
+		
+		Product product = null;
+		
+		for (Product p: products) {
+			if (p.getId().equals((id))){
+				product = p;
+			}
+		}
+		
+		if (product == null) {
+			return Result.error(Error.NotFound("Product.NotFound", "Product was not found"));
+		}
+		
+		Result<Void> sellOperation = product.sell(amountOfProducts);
+	
+		if (sellOperation.isError()) {
+			return Result.error(sellOperation.getFirstError());
+		}
+		
+		return Result.success();
 	}
 }
