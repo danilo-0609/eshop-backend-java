@@ -1,15 +1,21 @@
 package com.eshop.backend.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.eshop.backend.buildingBlocks.Result;
 import com.eshop.backend.modules.catalog.application.products.ProductDto;
+import com.eshop.backend.modules.catalog.application.products.ProductRequest;
 import com.eshop.backend.modules.catalog.application.products.ProductService;
 
 @RestController
@@ -22,8 +28,8 @@ public class ProductsController {
 		this.productService = productService;
 	}
 	
-	@GetMapping("/get/")
-	public ProductDto GetProduct(@RequestParam UUID id) {
+	@GetMapping("/products/get/{id}")
+	public ProductDto getProduct(@PathVariable UUID id) {
 		ProductDto result = productService.getProduct(id);
 	
 		if (result == null) {
@@ -33,5 +39,23 @@ public class ProductsController {
 		return result;
 	}
 	
+	@GetMapping
+	("/products/all")
+	public List<ProductDto> getAllProducts(){
+		List<ProductDto> results = productService.getAllProducts();
+		
+		return results;
+	}
 	
+	@PostMapping("/products/publish")
+	public UUID publishProduct(@RequestBody ProductRequest request) {
+		
+		Result<UUID> result = productService.publishProduct(request);
+		
+		if (result.isError()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, result.getFirstError().getDescription());
+		}
+		
+		return result.getValue().get();
+	}
 }

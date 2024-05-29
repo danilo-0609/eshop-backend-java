@@ -6,13 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import com.eshop.backend.buildingBlocks.Result;
 import com.eshop.backend.modules.catalog.domain.products.*;
 
+@Service
 public class ProductService {
 	
 	private List<Product> products;
-	
+
 	public ProductService() {
 		products = new ArrayList<Product>();
 		
@@ -49,7 +52,8 @@ public class ProductService {
 	public ProductDto getProduct(UUID id) {
 		
 		for (Product product: products) {
-			if (product.getId() == id) {
+			if (product.getId().equals(id)) {
+				
 				return new ProductDto(
 						product.getId(),
 						product.getSellerName(),
@@ -71,7 +75,7 @@ public class ProductService {
 	}
 	
 	
-	public UUID publishProduct(ProductRequest request) {
+	public Result<UUID> publishProduct(ProductRequest request) {
 		
 		Result<Product> product = Product.publish(request.getSellerName(), 
 				request.getName(), 
@@ -85,12 +89,12 @@ public class ProductService {
 				request.getColors());
 		
 		if (product.isError()) {
-			return null;
+			return Result.error(product.getFirstError());
 		}
 		
 		products.add(product.getValue().get());
 	
-		return product.getValue().get().getId();
+		return Result.success(product.getValue().get().getId());
 	}
 	
 	public List<ProductDto> getAllProducts(){

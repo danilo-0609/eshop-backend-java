@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class ProductRequest {
-	private UUID id;
     private String sellerName;
     private String name;
     private BigDecimal price;
@@ -17,12 +16,6 @@ public class ProductRequest {
     private List<String> tags;
     private int inStock;
     private String stockStatus;
-    private LocalDateTime createdDateTime;
-    private LocalDateTime updatedDateTime;
-    
-    public UUID getId() {
-        return id;
-    }
 
     public String getSellerName() {
         return sellerName;
@@ -64,16 +57,8 @@ public class ProductRequest {
         return stockStatus;
     }
 
-    public LocalDateTime getCreatedDateTime() {
-        return createdDateTime;
-    }
-
-    public LocalDateTime getUpdatedDateTime() {
-        return updatedDateTime;
-    }
     
-    public ProductRequest(UUID id,
-    		String sellerName,
+    public ProductRequest(String sellerName,
     		String name,
     		String price,
     		String description,
@@ -81,14 +66,10 @@ public class ProductRequest {
     		List<String> colors,
     		String productType,
     		List<String> tags,
-    		int inStock,
-    		String stockStatus,
-    		LocalDateTime createdDateTime,
-    		LocalDateTime updatedDateTime) {
+    		int inStock) {
     	
     	BigDecimal decimalPrice = new BigDecimal(price);
-    	
-    	this.id = id;
+    		
     	this.sellerName = sellerName;
     	this.name = name;
     	this.price = decimalPrice;
@@ -98,8 +79,5 @@ public class ProductRequest {
     	this.productType = productType;
     	this.tags = tags;
     	this.inStock = inStock;
-    	this.stockStatus = stockStatus;
-    	this.createdDateTime = createdDateTime;
-    	this.updatedDateTime = updatedDateTime;
     }
 }
