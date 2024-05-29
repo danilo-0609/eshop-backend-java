@@ -58,6 +58,8 @@ public class ProductRequest {
     }
 
     
+    public ProductRequest() { }
+    
     public ProductRequest(String sellerName,
     		String name,
     		String price,
