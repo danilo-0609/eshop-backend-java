@@ -153,11 +153,20 @@ public final class Product {
         }
 
         inStock -= amountOfProducts;
+        
+        this.setStatus();
         return Result.success();
     }
 
     private StockStatus checkStatus() {
-        return inStock == 0 ? StockStatus.OUT_OF_STOCK : StockStatus.WITH_STOCK;
+        return this.inStock == 0 ? StockStatus.OUT_OF_STOCK : StockStatus.WITH_STOCK;
+    }
+    
+    private void setStatus() {
+    	
+    	if (this.inStock == 0) {
+    		this.stockStatus = StockStatus.OUT_OF_STOCK;
+    	}
     }
 
     private Product(UUID id, 
