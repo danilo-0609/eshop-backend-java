@@ -1,5 +1,7 @@
 package com.eshop.backend.buildingBlocks;
 
+
+//Clase que representa el error que ha ocurrido en el sistema, con su descripción y código
 public class Error {
     
     private final String code;

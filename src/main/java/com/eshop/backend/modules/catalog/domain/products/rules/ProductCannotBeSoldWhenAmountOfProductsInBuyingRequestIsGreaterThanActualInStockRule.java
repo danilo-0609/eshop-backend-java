@@ -4,6 +4,7 @@ import com.eshop.backend.buildingBlocks.IBusinessRule;
 import com.eshop.backend.modules.catalog.domain.products.StockStatus;
 import com.eshop.backend.buildingBlocks.Error;
 
+//Regla de negocio que valida que no se puede vender una cantidad de productos x si esta cantidad es mayor a la cantidad de productos en el inventario
 public class ProductCannotBeSoldWhenAmountOfProductsInBuyingRequestIsGreaterThanActualInStockRule implements IBusinessRule {
     private final int inStock;
     private final int amountOfProductsInBuyingRequest;

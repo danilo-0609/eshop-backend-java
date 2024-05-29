@@ -25,6 +25,7 @@ import com.eshop.backend.modules.catalog.application.products.SellProductRequest
 @RestController
 public class ProductsController {
 	
+	//Inyecta el servicio "ProductService" al controlador. Este servicio comunica con la capa de dominio o lógica de negocio.
 	private final ProductService productService;
 	
 	@Autowired
@@ -34,20 +35,26 @@ public class ProductsController {
 	
 	@GetMapping("/products/get/{id}")
 	public ProductDto getProduct(@PathVariable UUID id) {
-		ProductDto result = productService.getProduct(id);
+		
+		Result<ProductDto> result = productService.getProduct(id);
 	
-		if (result == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product was not found");
+		//Si el servicio retorna un error, se retorna un código de error 404 NOT FOUND
+		if (result.isError()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, result.getFirstError().getCode() + "" + result.getFirstError().getDescription());
 		}
 		
-		return result;
+		
+		//Si la operación es exitosa, se retorna 200 OK
+		return result.getValue().get();
 	}
 	
 	@GetMapping
 	("/products/all")
 	public List<ProductDto> getAllProducts(){
+		
 		List<ProductDto> results = productService.getAllProducts();
 		
+		//Se retorna 200 OK 
 		return results;
 	}
 	
@@ -56,10 +63,12 @@ public class ProductsController {
 		
 		Result<UUID> result = productService.publishProduct(request);
 		
+		//Si el servicio retorna un error, se devuelve un código de error 400 BAD REQUEST
 		if (result.isError()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, result.getFirstError().getDescription());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, result.getFirstError().getCode() + "" + result.getFirstError().getDescription());
 		}
 		
+		//Si la operación es exitosa, se retorna 200 OK
 		return result.getValue().get();
 	}
 	
@@ -68,15 +77,19 @@ public class ProductsController {
 		
 		Result<Success> result = productService.sellProduct(id, request.getAmountOfProducts());
 		
+		
 		if (result.isError()) {
 			
+			//Si el error es igual a "NotFound", se retorna un código de error 404 NOT FOUND
 			if (result.getFirstError() == Error.NotFound("Product.NotFound", "Product was not found")) {
 				throw new ResponseStatusException(HttpStatus.NOT_FOUND, result.getFirstError().getDescription());
 			}
 			
+			//Si el error no es NotFound, se retorna 400 BAD REQUEST
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, result.getFirstError().getDescription());
 		}
 		
+		//Si la operación es exitosa, se retorna un 204 No Content 
 		return ResponseEntity.noContent().build();
 	}
 }

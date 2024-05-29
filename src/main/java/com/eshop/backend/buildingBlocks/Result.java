@@ -2,6 +2,8 @@ package com.eshop.backend.buildingBlocks;
 
 import java.util.Optional;
 
+//Clase que ayuda a evaluar el resultado de una operación. La operación puede ser exitosa o puede retornar un error.
+//Si una operación es exitosa, se retorna su valor genérico (<T>), de otro modo, se retorna el error que haya tenido.
 public class Result<T> {
     private final boolean isError;
     private final T value;

@@ -4,6 +4,7 @@ import com.eshop.backend.buildingBlocks.IBusinessRule;
 import com.eshop.backend.modules.catalog.domain.products.StockStatus;
 import com.eshop.backend.buildingBlocks.Error;
 
+//Regla de negocio que valida que un producto no se puede vender si no hay unidades. El inventario no puede ser un número negativo.
 public class ProductCannotBeSoldWhenProductIsOutOfStockRule implements IBusinessRule {
 
     private final StockStatus stockStatus;

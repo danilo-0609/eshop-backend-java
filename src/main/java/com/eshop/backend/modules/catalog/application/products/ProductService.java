@@ -13,9 +13,17 @@ import com.eshop.backend.buildingBlocks.Result;
 import com.eshop.backend.buildingBlocks.Success;
 import com.eshop.backend.modules.catalog.domain.products.*;
 
+/*
+ * Capa intermedia entre la API y las entidades de dominio del proyecto.
+ * Se encarga de separar responsabilidades, manteniendo a la capa de entidades de dominio del proyecto alejadas de la API
+ */
+
 @Service
 public class ProductService {
 	
+	
+	//Persistencia local en memoria de productos que permiten a los usuarios mirar productos en el sistema, 
+	//comprarlos o crear nuevos
 	private List<Product> products;
 
 	public ProductService() {
@@ -51,12 +59,14 @@ public class ProductService {
 	}
 	
 	
-	public ProductDto getProduct(UUID id) {
+	//Obtiene un producto de acuerdo a su id.
+	//Si no existe un producto con el id pasado, se retorna Not Found "No encontrado"
+	public Result<ProductDto> getProduct(UUID id) {
 		
 		for (Product product: products) {
 			if (product.getId().equals(id)) {
 				
-				return new ProductDto(
+				return Result.success(new ProductDto(
 						product.getId(),
 						product.getSellerName(),
 						product.getName(),
@@ -69,14 +79,15 @@ public class ProductService {
 						product.getInStock(),
 						product.getStockStatus().name(),
 						product.getCreatedDateTime(),
-						product.getUpdatedDateTime());
+						product.getUpdatedDateTime()));
 			}
 		}
 		
-		return null;
+		return Result.error(Error.NotFound("Product.NotFound", "Product was not found"));
 	}
 	
-	
+	//Publica productos en el sistema que luego se guardan en la lista en memoria de productos.
+	//Si el metodo publish() de la entidad de dominio retorna un error, luego este se devuelve
 	public Result<UUID> publishProduct(ProductRequest request) {
 		
 		Result<Product> product = Product.publish(request.getSellerName(), 
@@ -99,6 +110,7 @@ public class ProductService {
 		return Result.success(product.getValue().get().getId());
 	}
 	
+	//Obtiene todos los productos al momento disponibles en memoria 
 	public List<ProductDto> getAllProducts(){
 		
 		List<ProductDto> productsDto = new ArrayList<ProductDto>();
@@ -126,6 +138,8 @@ public class ProductService {
 		return productsDto;
 	}
 	
+	//Vende un producto al usuario. Si no existe un producto que tenga un id igual al id dado en la petición, se retorna un error 
+	//"no encontrado". Se llama al método sell() en la entidad de dominio. Si este retorna un error, se devuelve
 	public Result<Success> sellProduct(UUID id, int amountOfProducts){
 		
 		Product product = null;

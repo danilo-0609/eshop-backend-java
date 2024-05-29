@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+//Clase que representa la petición que hace el cliente al servidor para crear un producto
 public class ProductRequest {
     private String sellerName;
     private String name;

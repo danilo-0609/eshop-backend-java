@@ -3,6 +3,8 @@ package com.eshop.backend.modules.catalog.domain.products.rules;
 import com.eshop.backend.buildingBlocks.Error;
 import com.eshop.backend.buildingBlocks.IBusinessRule;
 
+
+//Regla de negocio que valida que un producto no se puede publicar si este no tiene ni una unidad
 public class ProductCannotBePublishedWithNoStockRule implements IBusinessRule {
 	
 	private final int amountOfProducts;
