@@ -1,4 +1,4 @@
-package com.eshop.backend.modules.catalog.application.products;
+package com.eshop.backend.application;
 
 //Clase que representa la petición que hace el cliente al servidor para vender un producto
 public class SellProductRequest {

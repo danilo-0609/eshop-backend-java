@@ -1,13 +1,30 @@
-package com.eshop.backend.modules.catalog.domain.products;
+package com.eshop.backend.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import com.eshop.backend.modules.catalog.domain.products.rules.*;
+
+
+
 import com.eshop.backend.buildingBlocks.IBusinessRule;
 import com.eshop.backend.buildingBlocks.Result;
 import com.eshop.backend.buildingBlocks.Success;
+import com.eshop.backend.domain.rules.ProductCannotBePublishedWithNoStockRule;
+import com.eshop.backend.domain.rules.ProductCannotBeSoldWhenAmountOfProductsInBuyingRequestIsGreaterThanActualInStockRule;
+import com.eshop.backend.domain.rules.ProductCannotBeSoldWhenProductIsOutOfStockRule;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 /*
  * Entidad del proyecto con lógica de negocio. Se encarga de validar la publicación de productos, evaluar su cantidad en inventario,
@@ -16,21 +33,35 @@ import com.eshop.backend.buildingBlocks.Success;
  * Mantiene sus atributos privados para garantizar que solamente esta entidad puede hacer cambio de sus entidades, para garantizar
  * consistencia.
  */
-
-public final class Product {
+@Entity
+@Table(name="products")
+public class Product {
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "productId", updatable = false, nullable = false)
     private UUID id;
+	
+	@Column(name = "seller_name")
     private String sellerName;
+	
+	@Column(name = "name")
     private String name;
-    private BigDecimal price;
-    private String description;
-    private List<String> sizes;
-    private List<String> colors;
-    private String productType;
-    private List<String> tags;
-    private int inStock;
-    private StockStatus stockStatus;
-    private LocalDateTime createdDateTime;
-    private LocalDateTime updatedDateTime;
+	
+	@Column(name = "price")
+	private BigDecimal price;
+    
+	@Column(name = "description")	
+	private String description;
+    
+	@Column(name = "product_type")
+	private String productType;
+	
+	@Column(name = "in_stock")
+	private int inStock;
+    
+	@Column(name = "stock_status")
+	@Enumerated(EnumType.STRING)
+	private StockStatus stockStatus;
 
     public UUID getId() {
         return id;
@@ -51,23 +82,11 @@ public final class Product {
     public String getDescription() {
         return description;
     }
-
-    public List<String> getSizes() {
-        return sizes;
-    }
-
-    public List<String> getColors() {
-        return colors;
-    }
-
+    
     public String getProductType() {
-        return productType;
+    	return productType;
     }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
+    
     public int getInStock() {
         return inStock;
     }
@@ -76,39 +95,25 @@ public final class Product {
         return stockStatus;
     }
 
-    public LocalDateTime getCreatedDateTime() {
-        return createdDateTime;
-    }
-
-    public LocalDateTime getUpdatedDateTime() {
-        return updatedDateTime;
-    }
-
     
     //Crea productos y valida que estos puedan ser creados y publicados.
     public static Result<Product> publish(String sellerName, 
             String name, 
             BigDecimal price, 
             String description, 
-            List<String> sizes, 
             String productType, 
-            List<String> tags, 
             int inStock, 
-            LocalDateTime occurredOn, 
-            List<String> colors) {
+            LocalDateTime occurredOn) {
         
-        Product product = new Product(UUID.randomUUID(), 
+    		UUID productId = UUID.randomUUID();
+    	
+        Product product = new Product(productId, 
                 sellerName, 
                 name, 
                 price, 
                 description, 
-                sizes, 
-                colors, 
                 productType, 
-                tags, 
-                inStock, 
-                occurredOn, 
-                null);
+                inStock);
         
         ProductCannotBePublishedWithNoStockRule rule = new ProductCannotBePublishedWithNoStockRule(inStock);
         
@@ -122,7 +127,24 @@ public final class Product {
 
         return Result.success(product);
     }
-
+    
+    
+    public static Product Create(UUID id, 
+            String sellerName, 
+            String name, 
+            BigDecimal price, 
+            String description, 
+            String productType, 
+            int inStock) {
+    	
+    	return new Product(id, 
+                sellerName, 
+                name, 
+                price, 
+                description, 
+                productType, 
+                inStock);
+    }
     
     //Actualiza el producto
     public static Product update(UUID id, 
@@ -130,26 +152,16 @@ public final class Product {
             String name, 
             BigDecimal price, 
             String description, 
-            List<String> sizes, 
             String productType, 
-            List<String> tags, 
-            int inStock, 
-            LocalDateTime createdOn, 
-            LocalDateTime updatedOn, 
-            List<String> colors) {
+            int inStock) {
         
         return new Product(id, 
                 sellerName, 
                 name, 
                 price, 
                 description, 
-                sizes, 
-                colors, 
                 productType, 
-                tags, 
-                inStock, 
-                createdOn, 
-                updatedOn);
+                inStock);
     }
 
     
@@ -197,29 +209,19 @@ public final class Product {
             String name, 
             BigDecimal price, 
             String description, 
-            List<String> sizes, 
-            List<String> colors, 
             String productType, 
-            List<String> tags, 
-            int inStock, 
-            LocalDateTime createdDateTime, 
-            LocalDateTime updatedDateTime) {
+            int inStock) {
         this.id = id;
         this.sellerName = sellerName;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.sizes = sizes;
-        this.colors = colors;
         this.productType = productType;
-        this.tags = tags;
         this.inStock = inStock;
         this.stockStatus = checkStatus();
-        this.createdDateTime = createdDateTime;
-        this.updatedDateTime = updatedDateTime;
     }
 
-    private Product() {}
+    public Product() {}
 
     
     //Método que ayuda a validar reglas de negocio al determinar si estas han sido rotas o no

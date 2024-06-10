@@ -14,24 +14,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.eshop.backend.application.GetProductByPriceRequest;
+import com.eshop.backend.application.ProductDto;
+import com.eshop.backend.application.ProductRequest;
+import com.eshop.backend.application.ProductService;
+import com.eshop.backend.application.SellProductRequest;
 import com.eshop.backend.buildingBlocks.Error;
 import com.eshop.backend.buildingBlocks.Result;
 import com.eshop.backend.buildingBlocks.Success;
-import com.eshop.backend.modules.catalog.application.products.ProductDto;
-import com.eshop.backend.modules.catalog.application.products.ProductRequest;
-import com.eshop.backend.modules.catalog.application.products.ProductService;
-import com.eshop.backend.modules.catalog.application.products.SellProductRequest;
 
 @RestController
 public class ProductsController {
 	
 	//Inyecta el servicio "ProductService" al controlador. Este servicio comunica con la capa de dominio o lógica de negocio.
-	private final ProductService productService;
-	
 	@Autowired
-	public ProductsController(ProductService productService) {
-		this.productService = productService;
-	}
+	private ProductService productService;
+	
 	
 	@GetMapping("/products/get/{id}")
 	public ProductDto getProduct(@PathVariable UUID id) {
@@ -48,14 +46,34 @@ public class ProductsController {
 		return result.getValue().get();
 	}
 	
-	@GetMapping
-	("/products/all")
-	public List<ProductDto> getAllProducts(){
+	@GetMapping("/products/get/productType/{productType}")
+	public List<ProductDto> getProductByProductType(@PathVariable String productType) {
 		
-		List<ProductDto> results = productService.getAllProducts();
+		Result<List<ProductDto>> result = productService.getProductByProductType(productType);
+	
+		//Si el servicio retorna un error, se retorna un código de error 404 NOT FOUND
+		if (result.isError()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, result.getFirstError().getCode() + "" + result.getFirstError().getDescription());
+		}
 		
-		//Se retorna 200 OK 
-		return results;
+		
+		//Si la operación es exitosa, se retorna 200 OK
+		return result.getValue().get();
+	}
+	
+	@PostMapping("/products/get/price")
+	public List<ProductDto> getProductByPrice(@RequestBody GetProductByPriceRequest request){
+		
+		Result<List<ProductDto>> result = productService.getProductByPrice(request.getMinPrice(), request.getMaxPrice());
+		
+		//Si el servicio retorna un error, se retorna un código de error 404 NOT FOUND
+		if (result.isError()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, result.getFirstError().getCode() + "" + result.getFirstError().getDescription());
+		}
+		
+		
+		//Si la operación es exitosa, se retorna 200 OK
+		return result.getValue().get();
 	}
 	
 	@PostMapping("/products/publish")

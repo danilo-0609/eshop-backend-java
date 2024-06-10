@@ -1,4 +1,4 @@
-package com.eshop.backend.modules.catalog.domain.products.rules;
+package com.eshop.backend.domain.rules;
 
 import com.eshop.backend.buildingBlocks.Error;
 import com.eshop.backend.buildingBlocks.IBusinessRule;

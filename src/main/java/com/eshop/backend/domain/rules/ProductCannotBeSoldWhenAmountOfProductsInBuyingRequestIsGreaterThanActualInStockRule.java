@@ -1,7 +1,7 @@
-package com.eshop.backend.modules.catalog.domain.products.rules;
+package com.eshop.backend.domain.rules;
 
 import com.eshop.backend.buildingBlocks.IBusinessRule;
-import com.eshop.backend.modules.catalog.domain.products.StockStatus;
+import com.eshop.backend.domain.StockStatus;
 import com.eshop.backend.buildingBlocks.Error;
 
 //Regla de negocio que valida que no se puede vender una cantidad de productos x si esta cantidad es mayor a la cantidad de productos en el inventario

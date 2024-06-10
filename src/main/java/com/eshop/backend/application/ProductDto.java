@@ -1,22 +1,24 @@
-package com.eshop.backend.modules.catalog.application.products;
+package com.eshop.backend.application;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-//Clase que representa la petición que hace el cliente al servidor para crear un producto
-public class ProductRequest {
+
+public class ProductDto {
+	private UUID id;
     private String sellerName;
     private String name;
     private BigDecimal price;
     private String description;
-    private List<String> sizes;
-    private List<String> colors;
     private String productType;
-    private List<String> tags;
     private int inStock;
     private String stockStatus;
+    
+    public UUID getId() {
+        return id;
+    }
 
     public String getSellerName() {
         return sellerName;
@@ -34,20 +36,8 @@ public class ProductRequest {
         return description;
     }
 
-    public List<String> getSizes() {
-        return sizes;
-    }
-
-    public List<String> getColors() {
-        return colors;
-    }
-
     public String getProductType() {
         return productType;
-    }
-
-    public List<String> getTags() {
-        return tags;
     }
 
     public int getInStock() {
@@ -58,29 +48,22 @@ public class ProductRequest {
         return stockStatus;
     }
 
-    
-    public ProductRequest() { }
-    
-    public ProductRequest(String sellerName,
+    public ProductDto(UUID id,
+    		String sellerName,
     		String name,
-    		String price,
+    		BigDecimal price,
     		String description,
-    		List<String> sizes,
-    		List<String> colors,
     		String productType,
-    		List<String> tags,
-    		int inStock) {
+    		int inStock,
+    		String stockStatus) {
     	
-    	BigDecimal decimalPrice = new BigDecimal(price);
-    		
+    	this.id = id;
     	this.sellerName = sellerName;
     	this.name = name;
-    	this.price = decimalPrice;
+    	this.price = price;
     	this.description = description;
-    	this.sizes = sizes;
-    	this.colors = colors;
     	this.productType = productType;
-    	this.tags = tags;
     	this.inStock = inStock;
+    	this.stockStatus = stockStatus;
     }
 }
